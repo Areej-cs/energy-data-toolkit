@@ -238,8 +238,27 @@ class ReportGenerator:
         for err in errors[-5:]:
             report.append(f"  - {err[:80]}...")
 
-        report.append("=" * 60)
-        return "\n".join(report)
+    report.append("=" * 60)
+    return "\n".join(report)
+
+@staticmethod
+def export_to_json(processor: ProductionDataProcessor, filepath: str) -> None:
+    """Export production analysis to JSON format."""
+    import json
+    from datetime import datetime
+    
+    data = {
+        'report_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'average_production': processor.calculate_daily_average(),
+        'top_days': processor.get_top_days(5),
+        'validation_errors': processor.validate_data(),
+        'total_records': len(processor.data)
+    }
+    
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
 
 
 if __name__ == "__main__":
